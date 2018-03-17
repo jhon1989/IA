@@ -6,9 +6,12 @@ var contador       = 0,
     sumaValor      = 2,
     sumaValorIncre = 1,
     numVueltas     = 1,
-    tipoLimpieza   = 1000;
+    tipoLimpieza   = 1000,
+    totalRecorido  = 0,
+    totalBasura    = 0;
 
 
+// Inicia los componentes cuando halla cargado la pagina
 $(function () {
 
     $('#tipoLimpieza').change(function () {
@@ -40,6 +43,7 @@ $(function () {
     });
 });
 
+//Habilitar los botones
 function removeAttr() {
     $("#clean").removeAttr("disabled");
     $("#iniciar").removeAttr("disabled");
@@ -51,25 +55,52 @@ function removeAttr() {
 function iniciar(value) {
     clearInterva = setInterval(function(){
         iniciarLimpieza();
+        totalRecorido++;
+
+        if (totalRecorido == 100) {
+            $("#totalRecorrido").text(totalRecorido);
+            $("#totalLimpio").text(totalRecorido - totalBasura);
+            $("#totalSucio").text(totalBasura);
+            $("#myModal").modal("show");
+            parar();
+        }
+
     }, value);
 }
 
-//Pne basuras en el 20 de la tabla
+//Pone basuras en el 20 de la tabla
 function ponerSucio() {
     var iterador,
         clase,
-        porcentaje = Math.floor((10*10) * 0.2);
+        porcentaje = Math.floor((10*10) * 0.2),
+        celdas = [];
 
     for (iterador = 0; iterador <= porcentaje; iterador++) {
 
-        clase = Math.floor(Math.random() * (10*10)) - iterador;
+        clase = Math.floor(Math.random() * (10*10));
+
+        if (clase <= iterador) {
+
+            clase = Math.floor(Math.random() * (10*10));
+        } else {
+            clase = Math.floor(Math.random() * (10*10)) - iterador;
+        }
 
         if (clase <= 9) {
             clase = '0' + clase;
         }
 
-        $("#bloque" + clase).css('background-color', 'blue');
-        $("#bloque" + clase).addClass('basura');
+       /* for (var i = 0; i <= celdas.length; i++) {
+            if (clase = celdas[i] ) {
+                alert(clase);
+                iterador--;
+            } else {
+                celdas[i] = clase;
+            }
+        }*/
+
+        //$("#bloque" + clase).css('background-color', 'blue');
+        $("#bloque" + clase).addClass('basura glyphicon glyphicon-trash');
     }
 }
 
@@ -80,8 +111,8 @@ function parar() {
 
 // Cancela todo el proceso de limpieza
 function cancelar() {
-     $("#numberFile").val("");
-     $("#numberColumn").val("");
+    $("#numberFile").val("");
+    $("#numberColumn").val("");
     contador       = 0,
     contador2      = 0,
     swit           = 0,
@@ -112,8 +143,9 @@ function createMatriz() {
             var celda = document.createElement("td");
             var div = document.createElement("div");
 
-            var textoCelda = document.createTextNode("Bloque " + i + j);
+            var textoCelda = document.createTextNode("" );
             div.appendChild(textoCelda);
+            div.setAttribute("class", "glyphicon glyphicon-ok")
             celda.appendChild(div);
             div.setAttribute("id", 'bloque' +i+j);
             hilera.appendChild(celda);
@@ -189,7 +221,19 @@ function iniciarLimpieza() {
         }
     }
 
-    $("#bloque" + cases).css('color', 'red');
+    if ($("#bloque" + cases).hasClass("glyphicon-trash")) {
+
+        $("#bloque" + cases).fadeOut(3000, function() {
+
+            $("#bloque" + cases).removeClass("glyphicon-trash");
+        });
+
+        $("#bloque" + cases).css('color', 'red');
+        totalBasura++;
+    } else {
+
+        $("#bloque" + cases).css('color', 'green');
+    }
 
     contador2++;
 
