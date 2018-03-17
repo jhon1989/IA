@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASPIRADORA</title>
+    <link  rel="stylesheet" href="assets/style/lib/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="text-center">
+            <h1 class="text-center">INTELIGENCIA ARTIFICIAL</h1>
+        </div>
+
+        <div class="panel panel-default">
+            <!-- Add Panel Heading Here -->
+            <div class="panel-body">
+                <div class="row col-md-offset-0">
+                    <div class="form-group col-md-4">
+                        <label for="numberFile">Numero de filas</label>
+                        <input type="number" id="numberFile" class="form-control">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="numberFile">Numero de columnas</label>
+                        <input type="number" id="numberColumn" class="form-control">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Tipo de Limpieza</label>
+                        <select class="form-control" id="tipoLimpieza">
+                            <option value="1000">Rapida</option>
+                            <option value="3000">Semi Rapida</option>
+                            <option value="5000">Lenta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row text-center col-md-offset-2">
+                    <div class="form-group col-md-2">
+                        <button type="button" id="createMatriz" class="btn btn-primary">Crear Matriz</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" id="iniciar" class="btn btn-success" disabled>Iniciar</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" id="clean" class="btn btn-danger" disabled>Cancelar</button>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <button type="button" id="parar" class="btn btn-warning" disabled>Parar</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" id="basura" class="btn btn-warning" disabled>Poner Basura</button>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-offset-0" id="matriz">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="assets/js/lib/jquery.min.js"></script>
+    <script src="assets/js/lib/bootstrap.min.js"></script>
+    <script src="assets/js/aspiradora/clenear.js"></script>
+</body>
+</html>
