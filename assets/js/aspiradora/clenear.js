@@ -1,5 +1,5 @@
-var contador       = 0,
-    contador2      = 0,
+var contador       = 1,
+    contador2      = 1,
     swit           = 0,
     clearInterva,
     swit2          = 0,
@@ -8,8 +8,10 @@ var contador       = 0,
     numVueltas     = 1,
     tipoLimpieza   = 1000,
     totalRecorido  = 0,
-    totalBasura    = 0;
-
+    totalBasura    = 0,
+    rows           = 10,
+    columns        = 10,
+    contadorClase  = 0;
 
 // Inicia los componentes cuando halla cargado la pagina
 $(function () {
@@ -19,6 +21,19 @@ $(function () {
     });
 
     $("#createMatriz").click( function () {
+        cancelar();
+        rows    = parseInt($("#numberFile").val());
+        columns = parseInt($("#numberColumn").val());
+
+        if (isNaN(rows) || isNaN(columns)) {
+            if (confirm("Si no ingresa valores la matriz se crea por default")) {
+                rows      = 10;
+                columns   = 10;
+            } else {
+
+                return;
+            }
+        }
         createMatriz();
         ponerSucio();
         removeAttr();
@@ -31,6 +46,7 @@ $(function () {
     });
 
     $("#basura").click( function () {
+        cancelar();
         createMatriz();
         ponerSucio();
     });
@@ -59,7 +75,7 @@ function iniciar(value) {
         iniciarLimpieza();
         totalRecorido++;
 
-        if (totalRecorido == 100) {
+        if (totalRecorido == rows * columns) {
             $("#totalRecorrido").text(totalRecorido);
             $("#totalLimpio").text(totalRecorido - totalBasura);
             $("#totalSucio").text(totalBasura);
@@ -74,23 +90,24 @@ function iniciar(value) {
 function ponerSucio() {
     var iterador,
         clase,
-        porcentaje = Math.floor((10*10) * 0.2);
+        porcentaje = Math.floor((rows * columns) * 0.2);
 
     for (iterador = 0; iterador <= porcentaje; iterador++) {
 
-        clase = Math.floor(Math.random() * (10*10));
+        clase = Math.floor(Math.random() * (rows * columns));
 
         if (clase <= iterador) {
-            clase = Math.floor(Math.random() * (10*10));
+            clase = Math.floor(Math.random() * (rows * columns));
         } else {
-            clase = Math.floor(Math.random() * (10*10)) - iterador;
+            clase = Math.floor(Math.random() * (rows * columns)) - iterador;
         }
 
-        if (clase <= 9) {
-            clase = '0' + clase;
-        }
+        if ($("#bloque" + clase).hasClass('glyphicon-trash')) {
+            $("#bloque" + clase+1).addClass('basura glyphicon glyphicon-trash');
+        } else {
 
-        $("#bloque" + clase).addClass('basura glyphicon glyphicon-trash');
+            $("#bloque" + clase).addClass('basura glyphicon glyphicon-trash');
+        }
     }
 }
 
@@ -101,19 +118,20 @@ function parar() {
 
 // Cancela todo el proceso de limpieza
 function cancelar() {
-    $("#numberFile").val("");
-    $("#numberColumn").val("");
-    contador       = 0,
-    contador2      = 0,
-    swit           = 0,
+    rows           = 10;
+    columns        = 10;
+    contador       = 1;
+    contador2      = 1;
+    swit           = 0;
     clearInterva,
-    swit2          = 0,
-    sumaValor      = 2,
-    sumaValorIncre = 1,
-    numVueltas     = 1,
+    swit2          = 0;
+    sumaValor      = 2;
+    sumaValorIncre = 1;
+    numVueltas     = 1;
     tipoLimpieza   = 1000;
     totalRecorido  = 0;
     totalBasura    = 0;
+    contadorClase  = 0;
     parar();
 }
 
@@ -122,17 +140,18 @@ function createMatriz() {
     // Crea un elemento <table> y un elemento <tbody>
     var tabla   = document.createElement("table");
     var tblBody = document.createElement("tbody");
-    cancelar();
 
     // Crea las celdas
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < rows; i++) {
         // Crea las hileras de la tabla
         var hilera = document.createElement("tr");
 
-        for (var j = 0; j < 10; j++) {
+        for (var j = 0; j < columns; j++) {
             // Crea un elemento <td> y un nodo de texto, haz que el nodo de
             // texto sea el contenido de <td>, ubica el elemento <td> al final
             // de la hilera de la tabla
+
+            contadorClase++;
             var celda = document.createElement("td");
             var div = document.createElement("div");
 
@@ -140,7 +159,7 @@ function createMatriz() {
             div.appendChild(textoCelda);
             div.setAttribute("class", "glyphicon glyphicon-ok")
             celda.appendChild(div);
-            div.setAttribute("id", 'bloque' +i+j);
+            div.setAttribute("id", 'bloque' +contadorClase);
             hilera.appendChild(celda);
         }
 
@@ -159,13 +178,10 @@ function createMatriz() {
 
 //Iniciar recorido
 function iniciarLimpieza() {
-    var cases;
+    var cases = contador;
 
-    if (contador < 10) {
-        cases = '0' + contador;
-    }
+    if (contador2 > columns) {
 
-    if (contador2 > 9) {
         if (swit == 0) {
             swit  = 1;
             swit2 = 0;
@@ -174,7 +190,7 @@ function iniciarLimpieza() {
                 contador = contador + contador2;
                 numVueltas++;
             } else {
-                contador = contador + contador2 + 10;
+                contador = contador + contador2 + columns - 1;
             }
 
         } else {
@@ -182,12 +198,12 @@ function iniciarLimpieza() {
             swit  = 0;
         }
 
-        contador2      = 0;
+        contador2      = 1;
         sumaValor      = 2;
         sumaValorIncre = 1;
     }
 
-    if (contador > 9) {
+    if (contador > columns) {
         if (swit == 1) {
             if (swit2 == 0) {
 
@@ -226,9 +242,9 @@ function iniciarLimpieza() {
         $("#bloque" + cases).css('color', 'green');
     }
 
-    contador2++;
-
-    if (contador < 10) {
+    if (contador < columns) {
         contador++;
     }
+
+    contador2++;
 }
