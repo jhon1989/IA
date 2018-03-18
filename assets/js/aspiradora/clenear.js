@@ -26,6 +26,8 @@ $(function () {
 
     $("#clean").click( function () {
         cancelar();
+        createMatriz();
+        removeAttr();
     });
 
     $("#basura").click( function () {
@@ -45,8 +47,8 @@ $(function () {
 
 //Habilitar los botones
 function removeAttr() {
-    $("#clean").removeAttr("disabled");
     $("#iniciar").removeAttr("disabled");
+    $("#clean").removeAttr("disabled");
     $("#basura").removeAttr("disabled");
     $("#parar").removeAttr("disabled");
 }
@@ -72,15 +74,13 @@ function iniciar(value) {
 function ponerSucio() {
     var iterador,
         clase,
-        porcentaje = Math.floor((10*10) * 0.2),
-        celdas = [];
+        porcentaje = Math.floor((10*10) * 0.2);
 
     for (iterador = 0; iterador <= porcentaje; iterador++) {
 
         clase = Math.floor(Math.random() * (10*10));
 
         if (clase <= iterador) {
-
             clase = Math.floor(Math.random() * (10*10));
         } else {
             clase = Math.floor(Math.random() * (10*10)) - iterador;
@@ -90,16 +90,6 @@ function ponerSucio() {
             clase = '0' + clase;
         }
 
-       /* for (var i = 0; i <= celdas.length; i++) {
-            if (clase = celdas[i] ) {
-                alert(clase);
-                iterador--;
-            } else {
-                celdas[i] = clase;
-            }
-        }*/
-
-        //$("#bloque" + clase).css('background-color', 'blue');
         $("#bloque" + clase).addClass('basura glyphicon glyphicon-trash');
     }
 }
@@ -122,6 +112,8 @@ function cancelar() {
     sumaValorIncre = 1,
     numVueltas     = 1,
     tipoLimpieza   = 1000;
+    totalRecorido  = 0;
+    totalBasura    = 0;
     parar();
 }
 
@@ -130,6 +122,7 @@ function createMatriz() {
     // Crea un elemento <table> y un elemento <tbody>
     var tabla   = document.createElement("table");
     var tblBody = document.createElement("tbody");
+    cancelar();
 
     // Crea las celdas
     for (var i = 0; i < 10; i++) {
@@ -173,13 +166,11 @@ function iniciarLimpieza() {
     }
 
     if (contador2 > 9) {
-
         if (swit == 0) {
             swit  = 1;
             swit2 = 0;
 
             if (numVueltas == 1) {
-
                 contador = contador + contador2;
                 numVueltas++;
             } else {
