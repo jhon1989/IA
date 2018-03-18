@@ -6,7 +6,7 @@ var contador       = 1,
     sumaValor      = 2,
     sumaValorIncre = 1,
     numVueltas     = 1,
-    tipoLimpieza   = 1000,
+    tipoLimpieza   = 10,
     totalRecorido  = 0,
     totalBasura    = 0,
     rows           = 10,
@@ -30,7 +30,7 @@ $(function () {
                 rows      = 10;
                 columns   = 10;
             } else {
-
+                $("#numberFile").focus();
                 return;
             }
         }
