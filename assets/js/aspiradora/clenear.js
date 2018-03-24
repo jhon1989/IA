@@ -11,7 +11,9 @@ var contador       = 1,
     totalBasura    = 0,
     rows           = 10,
     columns        = 10,
-    contadorClase  = 0;
+    contadorClase  = 0,
+    claseEliminaImagen = 0,
+    numberPercent      = 0;
 
 // Inicia los componentes cuando halla cargado la pagina
 $(function () {
@@ -22,18 +24,25 @@ $(function () {
 
     $("#createMatriz").click( function () {
         cancelar();
-        rows    = parseInt($("#numberFile").val());
-        columns = parseInt($("#numberColumn").val());
+
+        getValores();
 
         if (isNaN(rows) || isNaN(columns)) {
-            if (confirm("Si no ingresa valores la matriz se crea por default")) {
-                rows      = 10;
-                columns   = 10;
-            } else {
-                $("#numberFile").focus();
-                return;
-            }
+            return alerta();
         }
+
+        if (rows != columns) {
+            return alerta();
+        }
+
+        if (rows < 5 || rows > 20) {
+            return alerta();
+        }
+
+        if (numberPercent < 10 || numberPercent > 90) {
+            return alertaPorcentage();
+        }
+
         createMatriz();
         ponerSucio();
         removeAttr();
@@ -47,6 +56,24 @@ $(function () {
 
     $("#basura").click( function () {
         cancelar();
+        getValores();
+
+        if (isNaN(rows) || isNaN(columns)) {
+            return alerta();
+        }
+
+        if (rows != columns) {
+            return alerta();
+        }
+
+        if (rows < 5 || rows > 20) {
+            return alerta();
+        }
+
+        if (numberPercent < 10 || numberPercent > 90) {
+            return alertaPorcentage();
+        }
+
         createMatriz();
         ponerSucio();
     });
@@ -61,6 +88,12 @@ $(function () {
     });
 });
 
+function getValores() {
+    rows    = parseInt($("#numberFile").val());
+    columns = parseInt($("#numberColumn").val());
+    numberPercent = parseInt($("#numberPercent").val());
+}
+
 //Habilitar los botones
 function removeAttr() {
     $("#iniciar").removeAttr("disabled");
@@ -68,6 +101,21 @@ function removeAttr() {
     $("#basura").removeAttr("disabled");
     $("#parar").removeAttr("disabled");
 }
+
+function  alerta() {
+
+    alert("Valores no permitidos, Valores permitidos(5*5 hasta 20*20)")
+    $("#numberFile").focus();
+    return;
+}
+
+function  alertaPorcentage() {
+
+    alert("Procentaje no permitido, porcentaje permitido(10 a 90)")
+    $("#numberPercent").focus();
+    return;
+}
+
 
 //Inicia la limpieza
 function iniciar(value) {
@@ -89,25 +137,21 @@ function iniciar(value) {
 //Pone basuras en el 20 de la tabla
 function ponerSucio() {
     var iterador,
-        clase,
-        porcentaje = Math.floor((rows * columns) * 0.2);
+        porcentaje = Math.floor((rows * columns) * (numberPercent/100));
 
-    for (iterador = 0; iterador <= porcentaje; iterador++) {
+    var arr = [];
+    while(arr.length < porcentaje){
+        var randomnumber = Math.floor(Math.random() * Math.floor((rows * columns)) + 1);
+        if(arr.indexOf(randomnumber) > -1) {
 
-        clase = Math.floor(Math.random() * (rows * columns));
-
-        if (clase <= iterador) {
-            clase = Math.floor(Math.random() * (rows * columns));
-        } else {
-            clase = Math.floor(Math.random() * (rows * columns)) - iterador;
+            continue;
         }
+        arr[arr.length] = randomnumber;
+    }
 
-        if ($("#bloque" + clase).hasClass('glyphicon-trash')) {
-            $("#bloque" + clase+1).addClass('basura glyphicon glyphicon-trash');
-        } else {
+    for (iterador = 0; iterador <= arr.length; iterador++) {
 
-            $("#bloque" + clase).addClass('basura glyphicon glyphicon-trash');
-        }
+        $("#bloque" + arr[iterador]).addClass('basura glyphicon glyphicon-trash');
     }
 }
 
@@ -123,7 +167,7 @@ function cancelar() {
     contador       = 1;
     contador2      = 1;
     swit           = 0;
-    clearInterva,
+    clearInterva;
     swit2          = 0;
     sumaValor      = 2;
     sumaValorIncre = 1;
@@ -132,6 +176,7 @@ function cancelar() {
     totalRecorido  = 0;
     totalBasura    = 0;
     contadorClase  = 0;
+    claseEliminaImagen = 0;
     parar();
 }
 
@@ -155,9 +200,17 @@ function createMatriz() {
             var celda = document.createElement("td");
             var div = document.createElement("div");
 
-            var textoCelda = document.createTextNode("" );
+            var textoCelda = document.createTextNode("");
             div.appendChild(textoCelda);
-            div.setAttribute("class", "glyphicon glyphicon-ok")
+
+            var imagen = document.createElement("img");
+            imagen.src = 'assets/images/limpiesa.gif';
+            imagen.width  = 60;
+            imagen.height = 60;
+            imagen.setAttribute("class", 'bloque' +contadorClase);
+            imagen.style.visibility ="hidden";
+            div.appendChild(imagen);
+
             celda.appendChild(div);
             div.setAttribute("id", 'bloque' +contadorClase);
             hilera.appendChild(celda);
@@ -210,7 +263,6 @@ function iniciarLimpieza() {
                 cases = contador - 1;
                 swit2  = 1;
             } else {
-
                 cases = contador - sumaValor;
                 sumaValor++;
             }
@@ -228,6 +280,7 @@ function iniciarLimpieza() {
         }
     }
 
+    //Valida si la matriz tiene basura
     if ($("#bloque" + cases).hasClass("glyphicon-trash")) {
 
         $("#bloque" + cases).fadeOut(3000, function() {
@@ -237,13 +290,30 @@ function iniciarLimpieza() {
 
         $("#bloque" + cases).css('color', 'red');
         totalBasura++;
-    } else {
 
-        $("#bloque" + cases).css('color', 'green');
+        $(".bloque" + claseEliminaImagen).css("visibility", "hidden");
+        $(".bloque" + cases).css("visibility", "visible");
+    } else {
+        $(".bloque" + claseEliminaImagen).css("visibility", "hidden");
+        $(".bloque" + cases).css("visibility", "visible");
+
+    }
+
+
+    if (contador > columns) {
+        if (swit == 1) {
+            claseEliminaImagen = cases;
+        } else {
+            claseEliminaImagen = cases;
+        }
     }
 
     if (contador < columns) {
         contador++;
+    }
+
+    if (contador <= columns) {
+        claseEliminaImagen++;
     }
 
     contador2++;
