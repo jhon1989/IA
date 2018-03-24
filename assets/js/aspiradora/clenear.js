@@ -39,7 +39,7 @@ $(function () {
             return alerta();
         }
 
-        if (numberPercent < 10 || numberPercent > 90) {
+        if (numberPercent < 10 || numberPercent > 90 || isNaN(numberPercent)) {
             return alertaPorcentage();
         }
 
@@ -70,7 +70,7 @@ $(function () {
             return alerta();
         }
 
-        if (numberPercent < 10 || numberPercent > 90) {
+        if (numberPercent < 10 || numberPercent > 90 || isNaN(numberPercent)) {
             return alertaPorcentage();
         }
 
