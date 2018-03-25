@@ -1,19 +1,13 @@
-var contador       = 1,
-    contador2      = 1,
-    swit           = 0,
-    clearInterva,
-    swit2          = 0,
-    sumaValor      = 2,
-    sumaValorIncre = 1,
-    numVueltas     = 1,
+var clearInterva,
     tipoLimpieza   = 10,
-    totalRecorido  = 0,
+    totalRecorido  = 1,
     totalBasura    = 0,
-    rows           = 10,
-    columns        = 10,
+    rows           = 0,
+    columns        = 0,
     contadorClase  = 0,
     claseEliminaImagen = 0,
-    numberPercent      = 0;
+    numberPercent      = 0,
+    arraySucio = [];
 
 // Inicia los componentes cuando halla cargado la pagina
 $(function () {
@@ -44,7 +38,7 @@ $(function () {
         }
 
         createMatriz();
-        ponerSucio();
+        calcularPorcentajeSucio();
         removeAttr();
     });
 
@@ -75,7 +69,7 @@ $(function () {
         }
 
         createMatriz();
-        ponerSucio();
+        calcularPorcentajeSucio();
     });
 
     $("#iniciar").click( function () {
@@ -116,16 +110,15 @@ function  alertaPorcentage() {
     return;
 }
 
-
 //Inicia la limpieza
 function iniciar(value) {
     clearInterva = setInterval(function(){
-        iniciarLimpieza();
+        iniciarLimpieza(totalRecorido);
         totalRecorido++;
 
-        if (totalRecorido == rows * columns) {
-            $("#totalRecorrido").text(totalRecorido);
-            $("#totalLimpio").text(totalRecorido - totalBasura);
+        if (totalRecorido == arraySucio.length) {
+            $("#totalRecorrido").text((columns * rows));
+            $("#totalLimpio").text((columns * rows) - totalBasura);
             $("#totalSucio").text(totalBasura);
             $("#myModal").modal("show");
             parar();
@@ -135,23 +128,26 @@ function iniciar(value) {
 }
 
 //Pone basuras en el 20 de la tabla
-function ponerSucio() {
-    var iterador,
-        porcentaje = Math.floor((rows * columns) * (numberPercent/100));
+function calcularPorcentajeSucio() {
+    var porcentaje = Math.floor((rows * columns) * (numberPercent/100));
 
-    var arr = [];
-    while(arr.length < porcentaje){
+    while(arraySucio.length < porcentaje){
         var randomnumber = Math.floor(Math.random() * Math.floor((rows * columns)) + 1);
-        if(arr.indexOf(randomnumber) > -1) {
+        if(arraySucio.indexOf(randomnumber) > -1) {
 
             continue;
         }
-        arr[arr.length] = randomnumber;
+        arraySucio[arraySucio.length] = randomnumber;
     }
 
-    for (iterador = 0; iterador <= arr.length; iterador++) {
+    poneSocio();
+}
 
-        $("#bloque" + arr[iterador]).addClass('basura glyphicon glyphicon-trash');
+function poneSocio() {
+    var iterador;
+    for (iterador = 0; iterador <= arraySucio.length; iterador++) {
+
+        $("#bloque" + arraySucio[iterador]).addClass('basura glyphicon glyphicon-trash');
     }
 }
 
@@ -162,21 +158,16 @@ function parar() {
 
 // Cancela todo el proceso de limpieza
 function cancelar() {
-    rows           = 10;
-    columns        = 10;
-    contador       = 1;
-    contador2      = 1;
-    swit           = 0;
+    rows           = 0;
+    columns        = 0;
     clearInterva;
-    swit2          = 0;
-    sumaValor      = 2;
-    sumaValorIncre = 1;
-    numVueltas     = 1;
     tipoLimpieza   = 1000;
     totalRecorido  = 0;
     totalBasura    = 0;
     contadorClase  = 0;
     claseEliminaImagen = 0;
+    numberPercent      = 0,
+    arraySucio         = [];
     parar();
 }
 
@@ -230,55 +221,8 @@ function createMatriz() {
 }
 
 //Iniciar recorido
-function iniciarLimpieza() {
-    var cases = contador;
-
-    if (contador2 > columns) {
-
-        if (swit == 0) {
-            swit  = 1;
-            swit2 = 0;
-
-            if (numVueltas == 1) {
-                contador = contador + contador2;
-                numVueltas++;
-            } else {
-                contador = contador + contador2 + columns - 1;
-            }
-
-        } else {
-            swit2 = 0;
-            swit  = 0;
-        }
-
-        contador2      = 1;
-        sumaValor      = 2;
-        sumaValorIncre = 1;
-    }
-
-    if (contador > columns) {
-        if (swit == 1) {
-            if (swit2 == 0) {
-
-                cases = contador - 1;
-                swit2  = 1;
-            } else {
-                cases = contador - sumaValor;
-                sumaValor++;
-            }
-
-        } else {
-
-            if (swit2 == 0) {
-                cases = contador;
-                swit2 = 1;
-            } else {
-
-                cases = contador + sumaValorIncre;
-                sumaValorIncre++;
-            }
-        }
-    }
+function iniciarLimpieza(indice) {
+    var cases = arraySucio[indice];
 
     //Valida si la matriz tiene basura
     if ($("#bloque" + cases).hasClass("glyphicon-trash")) {
@@ -293,28 +237,7 @@ function iniciarLimpieza() {
 
         $(".bloque" + claseEliminaImagen).css("visibility", "hidden");
         $(".bloque" + cases).css("visibility", "visible");
-    } else {
-        $(".bloque" + claseEliminaImagen).css("visibility", "hidden");
-        $(".bloque" + cases).css("visibility", "visible");
-
     }
 
-
-    if (contador > columns) {
-        if (swit == 1) {
-            claseEliminaImagen = cases;
-        } else {
-            claseEliminaImagen = cases;
-        }
-    }
-
-    if (contador < columns) {
-        contador++;
-    }
-
-    if (contador <= columns) {
-        claseEliminaImagen++;
-    }
-
-    contador2++;
+    claseEliminaImagen = cases;
 }
